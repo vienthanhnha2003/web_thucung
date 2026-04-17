@@ -158,7 +158,11 @@ body {
 
        <div class="col-md-9">
         <div class="row" id="product-list"></div>
-        <div id="pagination" class="mt-3 text-center"></div>
+        <div class="text-center mt-3">
+            <button id="loadMoreBtnPhanTrang" class="btn btn-outline-primary">
+                Xem thêm
+            </button>
+        </div>
     </div>
 
     </div>
@@ -176,30 +180,22 @@ let allProducts = [];
 let currentCategory = "";
 let currentPage = 1;
 let totalPages = 1;
+
 $(document).ready(function () {
-    loadData(1);
+    loadData(1, true);
     loadDataDanhMuc();
 
     $("#search").on("keyup", filterProducts);
     $("#minPrice, #maxPrice").on("input", filterProducts);
+
+    $("#loadMoreBtnPhanTrang").click(function () {
+        if (currentPage < totalPages) {
+            loadData(currentPage + 1, false);
+        }
+    });
 });
-function renderPagination() {
-    let html = "";
 
-    for (let i = 1; i <= totalPages; i++) {
-        html += `
-        <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'} m-1"
-            onclick="goToPage(${i})">
-            ${i}
-        </button>
-        `;
-    }
 
-    $("#pagination").html(html);
-}
-function goToPage(page) {
-    loadData(page);
-}
 function loadDataDanhMuc() {
     $.get("get_danh_muc.php", function (data) {
         allProducts = JSON.parse(data);
@@ -208,18 +204,30 @@ function loadDataDanhMuc() {
         
     });
 }
-function loadData(page = 1) {
+function loadData(page = 1, reset = false) {
     $.get("get_products.php?page=" + page, function (data) {
         let res = JSON.parse(data);
 
-        allProducts = res.products;
-        
+        let newProducts = res.products;
+
         totalPages = res.totalPages;
         currentPage = res.currentPage;
 
+        if (reset) {
+            allProducts = newProducts;
+            $("#product-list").html("");
+        } else {
+            allProducts = allProducts.concat(newProducts);
+        }
+
         renderProducts(allProducts);
-        renderPagination();
-        
+
+        // Ẩn nút nếu hết trang
+        if (currentPage >= totalPages) {
+            $("#loadMoreBtnPhanTrang").hide();
+        } else {
+            $("#loadMoreBtnPhanTrang").show();
+        }
     });
 }
 function renderCategories(products) {
@@ -281,6 +289,7 @@ function renderProducts(products) {
         if (p.IsPromotion == 1) {
             finalPrice = price - (price * p.DiscountPercent / 100);
         }
+        console.log(p.ImageURL)
         let anh='';
         if(p.ImageURL==null){
             anh="images/noimages.jpg"
@@ -292,8 +301,10 @@ function renderProducts(products) {
             <div class="card product-card position-relative">
 
                 ${p.IsPromotion == 1 ? `<div class="badge-sale">-${p.DiscountPercent}%</div>` : ""}
- <!-- HÌNH ẢNH -->
+                
+                <!-- HÌNH ẢNH -->
                 <img src="${anh}" class="product-img" alt="No Images">
+
                 <div class="card-body">
                     <div>
                         <h6>${p.Name}</h6>
