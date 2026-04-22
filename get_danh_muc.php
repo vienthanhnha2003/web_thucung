@@ -2,7 +2,7 @@
 include "db.php";
 
 $sql = "SELECT p.*, c.CategoryName 
-        FROM products p 
+        FROM categories p 
         JOIN categories c ON p.CategoryID = c.CategoryID";
 
 $result = $conn->query($sql);
@@ -14,4 +14,6 @@ while ($row = $result->fetch_assoc()) {
 }
 
 echo json_encode($products);
+
+
 ?>
