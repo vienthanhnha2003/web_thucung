@@ -163,6 +163,19 @@ body {
                 Xem thêm
             </button>
         </div>
+        <!-- BEST SELLER -->
+<!-- BEST SELLER -->
+<div class="container mt-5">
+    <h5 class="mb-3">🔥 Sản phẩm bán chạy</h5>
+
+    <div class="row" id="best-seller-list"></div>
+
+    <div class="text-center mt-3">
+        <button id="loadMoreBestSeller" class="btn btn-outline-danger">
+            Xem thêm
+        </button>
+    </div>
+</div>
     </div>
 
     </div>
@@ -183,10 +196,20 @@ let allProducts = [];
 let currentCategory = "";
 let currentPage = 1;
 let totalPages = 1;
-
+//phan trang hot
+let bestSellerPage = 1;
+let bestSellerTotalPages = 1;
+let bestSellerData = [];
 $(document).ready(function () {
     loadData(1, true);
     loadDataDanhMuc();
+    loadBestSeller(1, true);
+
+$("#loadMoreBestSeller").click(function () {
+    if (bestSellerPage < bestSellerTotalPages) {
+        loadBestSeller(bestSellerPage + 1, false);
+    }
+});
 
     // $("#search").on("keyup", filterProducts);
     // $("#minPrice, #maxPrice").on("input", filterProducts);
@@ -212,7 +235,75 @@ $("#maxPrice").on("input", function () {
     });
 });
 
+function loadBestSeller(page = 1, reset = false) {
+    $.get(`get_best_seller.php?page=${page}`, function (data) {
 
+        let res = JSON.parse(data);
+
+        let newData = res.products;
+
+        bestSellerTotalPages = res.totalPages;
+        bestSellerPage = res.currentPage;
+
+        if (reset) {
+            bestSellerData = newData;
+        } else {
+            bestSellerData = bestSellerData.concat(newData);
+        }
+
+        renderBestSeller(bestSellerData);
+
+        if (bestSellerPage >= bestSellerTotalPages) {
+            $("#loadMoreBestSeller").hide();
+        } else {
+            $("#loadMoreBestSeller").show();
+        }
+    });
+}
+function renderBestSeller(products) {
+    let html = "";
+
+    products.forEach(p => {
+
+        let price = parseFloat(p.Price);
+        let finalPrice = price;
+
+        if (p.IsPromotion == 1) {
+            finalPrice = price - (price * p.DiscountPercent / 100);
+        }
+
+        let anh = p.ImageURL ? "images/" + p.ImageURL : "images/noimages.jpg";
+
+        html += `
+        <div class="col-md-3 mb-3">
+            <div class="card product-card">
+
+                <img src="${anh}" class="product-img">
+
+                <div class="card-body">
+                    <h6>${p.Name}</h6>
+
+                    ${
+                        p.IsPromotion == 1
+                        ? `<span class="old-price">${price.toLocaleString()} đ</span><br>
+                           <span class="price">${finalPrice.toLocaleString()} đ</span>`
+                        : `<span class="price">${price.toLocaleString()} đ</span>`
+                    }
+
+                    <br>
+                    <small>🔥 ${p.TotalSold} đã bán</small>
+
+                    <button class="btn btn-danger btn-sm mt-2 w-100">
+                        Mua ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+
+    $("#best-seller-list").html(html);
+}
 function loadDataDanhMuc() {
     $.get("get_danh_muc_4.php", function (data) {
         allProducts = JSON.parse(data);
