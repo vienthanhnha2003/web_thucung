@@ -5,7 +5,7 @@
 <title>Shop sản phẩm</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 body {
     background: #f5f5fa;
@@ -117,6 +117,59 @@ body {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
+.actions i {
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.actions i:hover {
+    transform: scale(1.15);
+    color: #ffe082;
+}
+
+.cart {
+    position: relative;
+    cursor: pointer;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: red;
+    color: white;
+    font-size: 11px;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.favorite-btn i {
+    color: #ff4d6d;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
 </style>
 </head>
 
@@ -127,11 +180,23 @@ body {
     <div class="logo">🐾 Pet Shop</div>
 
     <div class="actions">
-        <div>👤 Tài khoản</div>
-        <div class="cart">
-            🛒 Giỏ hàng
-            <span class="cart-badge">3</span>
-        </div>
+         <!-- ACCOUNT -->
+    <div class="d-flex align-items-center gap-1">
+        <i class="bi bi-person-circle"></i>
+        <span>Tài khoản</span>
+    </div>
+
+    <!-- FAVORITE -->
+    <div class="cart">
+        <i class="bi bi-heart-fill fs-5"></i>
+        <span class="cart-badge">2</span>
+    </div>
+
+    <!-- CART -->
+    <div class="cart">
+        <i class="bi bi-cart3 fs-5"></i>
+        <span class="cart-badge">3</span>
+    </div>
     </div>
 </div>
 
@@ -142,14 +207,14 @@ body {
         <div class="col-md-3">
             <div class="sidebar">
 
-                <h6>Danh mục</h6>
+                <h6><i class="bi bi-archive-fill"></i> Danh mục</h6>
                 <div id="category-list"></div>
 
                 <hr>
 
                 <input type="text" id="search" class="form-control mb-2" placeholder="🔍 Tìm sản phẩm...">
 
-                <h6 class="mt-3">Lọc theo giá</h6>
+                <h6><i class="bi bi-filter-square"></i> Lọc theo giá</h6>
                 <input type="number" id="minPrice" class="form-control mb-2" placeholder="Giá từ">
                 <input type="number" id="maxPrice" class="form-control" placeholder="Đến">
 
@@ -160,7 +225,7 @@ body {
         <div class="row" id="product-list"></div>
         <div class="text-center mt-3">
             <button id="loadMoreBtnPhanTrang" class="btn btn-outline-primary">
-                Xem thêm
+                <i class="bi bi-arrow-down-square-fill"></i> Xem thêm
             </button>
         </div>
         <!-- BEST SELLER -->
@@ -172,7 +237,7 @@ body {
 
     <div class="text-center mt-3">
         <button id="loadMoreBestSeller" class="btn btn-outline-danger">
-            Xem thêm
+            <i class="bi bi-arrow-down-square-fill"></i> Xem thêm
         </button>
     </div>
 </div>
@@ -358,11 +423,11 @@ function loadData(page = 1, reset = false) {
 }
 function renderCategories(categories) {
 
-    let html = `<div class="category-item active" data-value="">Tất cả</div>`;
+    let html = `<div class="category-item active" data-value=""><i class="bi bi-blockquote-right"></i>&nbsp;Tất cả</div>`;
 
     categories.forEach(c => {
         html += `<div class="category-item" data-value="${c.CategoryName}">
-                    ${c.CategoryName}
+                   <i class="bi bi-arrow-right-circle"></i> ${c.CategoryName}
                  </div>`;
     });
 
@@ -449,9 +514,11 @@ function renderProducts(products) {
 
                         <small>📦 ${p.Stock}</small>
                     </div>
-
+                    <div class="favorite-btn">
+                        <i class="bi bi-heart"></i>
+                    </div>
                     <button class="btn btn-primary btn-sm mt-2 w-100">
-                        Thêm vào giỏ
+                       <i class="bi bi-cart4"></i> Thêm vào giỏ
                     </button>
                 </div>
             </div>
