@@ -343,10 +343,10 @@ function renderBestSeller(products) {
         <div class="col-md-3 mb-3">
             <div class="card product-card">
 
-                <img src="${anh}" class="product-img">
+              <a href="product-detail.php?id=${p.ProductID}">  <img src="${anh}" class="product-img"></a>
 
                 <div class="card-body">
-                    <h6>${p.Name}</h6>
+                    <h6><a href="product-detail.php?id=${p.ProductID}">${p.Name}</a></h6>
 
                     ${
                         p.IsPromotion == 1
@@ -495,11 +495,11 @@ function renderProducts(products) {
                 ${p.IsPromotion == 1 ? `<div class="badge-sale">-${p.DiscountPercent}%</div>` : ""}
                 
                 <!-- HÌNH ẢNH -->
-                <img src="${anh}" class="product-img" alt="No Images">
+                <a href="product-detail.php?id=${p.ProductID}"><img src="${anh}" class="product-img" alt="No Images"></a>
 
                 <div class="card-body">
                     <div>
-                        <h6>${p.Name}</h6>
+                        <h6><a href="product-detail.php?id=${p.ProductID}">${p.Name}</a></h6>
                         <small>${p.CategoryName}</small>
 
                         <div class="mt-2">
