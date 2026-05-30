@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 22, 2026 at 09:10 AM
+-- Generation Time: May 23, 2026 at 12:37 AM
 -- Server version: 8.4.7
 -- PHP Version: 8.3.28
 
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `CategoryID` int NOT NULL AUTO_INCREMENT,
   `CategoryName` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`CategoryID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `categories`
@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS `productimages` (
   `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ImageID`),
   KEY `ProductID` (`ProductID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `productimages`
@@ -400,7 +400,9 @@ CREATE TABLE IF NOT EXISTS `productimages` (
 INSERT INTO `productimages` (`ImageID`, `ProductID`, `ImageURL`, `IsMain`, `SortOrder`, `CreatedAt`) VALUES
 (1, 1, 'doghusky.jpg', 1, 1, '2026-04-03 20:52:02'),
 (2, 2, 'catlongngan.jpg', 1, 1, '2026-04-03 20:52:02'),
-(11, 3, 'Pedigree.jpg', 1, 1, '2026-04-03 20:52:02');
+(11, 3, 'Pedigree.jpg', 1, 1, '2026-04-03 20:52:02'),
+(12, 1, 'doghusky1.jpg', 1, 1, '2026-04-03 20:52:02'),
+(13, 1, 'doghusky2.jpg', 1, 1, '2026-04-03 20:52:02');
 
 -- --------------------------------------------------------
 
@@ -428,7 +430,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 --
 
 INSERT INTO `products` (`ProductID`, `Name`, `Description`, `Price`, `Stock`, `CategoryID`, `IsPromotion`, `DiscountPercent`, `CreatedAt`) VALUES
-(1, 'Chó Husky', 'Mô tả', 5000000.00, 10, 1, 0, 0, '2026-04-03 20:52:02'),
+(1, 'Chó Husky', 'Chó Husky mắt xanh mã HK1950 nổi bật với vẻ đẹp hoang dã, khỏe khoắn và ánh nhìn thu hút. Chúng được yêu thích không chỉ bởi ngoại hình đặc biệt mà còn nhờ tính cách thân thiện, năng động.\n\nQuyền lợi có được khi mua Chó Husky mắt xanh mã HK1950 tại Pet House.', 5000000.00, 10, 1, 0, 0, '2026-04-03 20:52:02'),
 (2, 'Mèo Anh lông ngắn', 'Mô tả', 4000000.00, 8, 2, 1, 10, '2026-04-03 20:52:02'),
 (3, 'Thức ăn Pedigree', 'Mô tả', 200000.00, 50, 3, 1, 5, '2026-04-03 20:52:02'),
 (4, 'Vòng cổ', 'Mô tả', 50000.00, 100, 4, 0, 0, '2026-04-03 20:52:02'),

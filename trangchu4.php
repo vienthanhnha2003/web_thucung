@@ -193,9 +193,9 @@ body {
     </div>
 
     <!-- CART -->
-    <div class="cart">
+    <div class="cart" onclick="showCart()">
         <i class="bi bi-cart3 fs-5"></i>
-        <span class="cart-badge">3</span>
+        <span class="cart-badge" id="cart-count">0</span>
     </div>
     </div>
 </div>
@@ -358,7 +358,7 @@ function renderBestSeller(products) {
                     <br>
                     <small>🔥 ${p.TotalSold} đã bán</small>
 
-                    <button class="btn btn-danger btn-sm mt-2 w-100">
+                    <button class="btn btn-danger btn-sm mt-2 w-100" onclick='addToCart(${JSON.stringify(p)})'>
                         Mua ngay
                     </button>
                 </div>
@@ -517,9 +517,10 @@ function renderProducts(products) {
                     <div class="favorite-btn">
                         <i class="bi bi-heart"></i>
                     </div>
-                    <button class="btn btn-primary btn-sm mt-2 w-100">
-                       <i class="bi bi-cart4"></i> Thêm vào giỏ
-                    </button>
+                   <button class="btn btn-primary btn-sm mt-2 w-100"
+        onclick='addToCart(${JSON.stringify(p)})'>
+   <i class="bi bi-cart4"></i> Thêm vào giỏ
+</button>
                 </div>
             </div>
         </div>
@@ -528,7 +529,261 @@ function renderProducts(products) {
 
     $("#product-list").html(html);
 }
-</script>
+//gio hang
+// ================= GIỎ HÀNG =================
 
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+// cập nhật badge
+updateCartCount();
+
+// thêm vào giỏ
+function addToCart(product) {
+
+    let index = cart.findIndex(x => x.ProductID == product.ProductID);
+
+    if (index >= 0) {
+        cart[index].Quantity += 1;
+    } else {
+
+        let item = {
+            CartItemID: Date.now(),
+            CartID: 1,
+            ProductID: product.ProductID,
+            Quantity: 1,
+            Name: product.Name,
+            Price: product.Price,
+            ImageURL: product.ImageURL
+        };
+
+        cart.push(item);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    updateCartCount();
+
+    alert("Đã thêm vào giỏ hàng");
+}
+
+// cập nhật số lượng icon
+function updateCartCount() {
+
+    let total = 0;
+
+    cart.forEach(item => {
+        total += item.Quantity;
+    });
+
+    $("#cart-count").text(total);
+}
+
+function showCart() {
+
+    let html = "";
+    let total = 0;
+
+    if (cart.length == 0) {
+        html = `
+        <tr>
+            <td colspan="6" class="text-center">
+                Giỏ hàng trống
+            </td>
+        </tr>
+        `;
+    }
+
+    cart.forEach(item => {
+
+        let price = parseFloat(item.Price);
+
+        let thanhTien = price * item.Quantity;
+
+        total += thanhTien;
+
+        let img = item.ImageURL
+            ? "images/" + item.ImageURL
+            : "images/noimages.jpg";
+
+        html += `
+        <tr>
+            <td width="80">
+                <img src="${img}" width="60">
+            </td>
+
+            <td>${item.Name}</td>
+
+            <td>${price.toLocaleString()} đ</td>
+
+            <td width="140">
+
+    <div class="d-flex align-items-center">
+
+        <button class="btn btn-sm btn-secondary"
+            onclick="changeQty(${item.ProductID}, -1)">
+            -
+        </button>
+
+        <input type="text"
+               class="form-control text-center mx-1"
+               value="${item.Quantity}"
+               readonly
+               style="width:50px;">
+
+        <button class="btn btn-sm btn-primary"
+            onclick="changeQty(${item.ProductID}, 1)">
+            +
+        </button>
+
+    </div>
+
+</td>
+
+            <td>${thanhTien.toLocaleString()} đ</td>
+
+            <td>
+                <button class="btn btn-danger btn-sm"
+                    onclick="removeCart(${item.ProductID})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+        `;
+    });
+
+    $("#cart-body").html(html);
+
+    $("#cart-total").text(total.toLocaleString());
+
+    let modalEl = document.getElementById('cartModal');
+
+    let modal = bootstrap.Modal.getInstance(modalEl);
+
+    if (!modal) {
+        modal = new bootstrap.Modal(modalEl);
+    }
+
+    modal.show();
+}
+function changeQty(productId, value) {
+
+    let index = cart.findIndex(x => x.ProductID == productId);
+
+    if (index >= 0) {
+
+        cart[index].Quantity += value;
+
+        // nếu số lượng <=0 thì xóa
+        if (cart[index].Quantity <= 0) {
+            cart.splice(index, 1);
+        }
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    updateCartCount();
+
+    // nếu rỗng thì đóng modal
+    if (cart.length == 0) {
+
+        let modalEl = document.getElementById('cartModal');
+
+        let modal = bootstrap.Modal.getInstance(modalEl);
+
+        if (modal) {
+            modal.hide();
+        }
+
+        $(".modal-backdrop").remove();
+
+        $("body").removeClass("modal-open");
+
+        $("body").css({
+            overflow: "",
+            paddingRight: ""
+        });
+
+        return;
+    }
+
+    showCart();
+}
+
+// xóa sản phẩm
+function removeCart(productId) {
+
+    cart = cart.filter(x => x.ProductID != productId);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    updateCartCount();
+
+    // nếu giỏ hàng rỗng -> đóng modal
+    if (cart.length == 0) {
+
+        let modalEl = document.getElementById('cartModal');
+
+        let modal = bootstrap.Modal.getInstance(modalEl);
+
+        if (modal) {
+            modal.hide();
+        }
+
+        // xóa lớp backdrop còn sót
+        $(".modal-backdrop").remove();
+
+        $("body").removeClass("modal-open");
+
+        $("body").css({
+            overflow: "",
+            paddingRight: ""
+        });
+
+        return;
+    }
+
+    showCart();
+}
+</script>
+<!-- MODAL GIỎ HÀNG -->
+<div class="modal fade" id="cartModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+            <i class="bi bi-cart-fill"></i> Giỏ hàng
+        </h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Hình</th>
+                    <th>Tên SP</th>
+                    <th>Giá</th>
+                    <th>SL</th>
+                    <th>Thành tiền</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody id="cart-body"></tbody>
+        </table>
+
+        <h5 class="text-end">
+            Tổng: <span class="text-danger" id="cart-total">0</span> đ
+        </h5>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
